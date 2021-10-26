@@ -7,6 +7,6 @@ Oppgaven er levert av følgende student:
 
 # Oppgavebeskrivelse
 
-I oppgave 1 så gikk jeg frem ved å ...
+I oppgave 1 så gikk jeg frem ved å kopiere leggInn fra kompendiet, og så adde "q" på riktig plass.
 
-I oppgave 2 så brukte jeg en ... til å ...
+Oppgave 2 løste jeg ved hjelp av kompendiet og comparator. Definerte en int som blir enten -1, 0 eller 1 når den går gjennom alle tall. Oppdaterte antall når int cmp var lik 0, altså når den fant samme tall i treet vi søkte med antall. 
