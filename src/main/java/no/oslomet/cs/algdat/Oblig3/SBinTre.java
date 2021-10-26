@@ -1,10 +1,7 @@
 package no.oslomet.cs.algdat.Oblig3;
 
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class SBinTre<T> {
     private static final class Node<T>   // en indre nodeklasse
@@ -110,11 +107,48 @@ public class SBinTre<T> {
     }
 
     public boolean fjern(T verdi) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+       // throw new UnsupportedOperationException("Ikke kodet ennå!");
+        if (verdi == null) return false;
+        Node<T> p = rot, q = null;
+        while (p != null) {
+            int cmp = comp.compare(verdi,p.verdi);
+            if (cmp < 0) { q = p; p = p.venstre; }
+            else if (cmp > 0) { q = p; p = p.høyre; }
+            else break;
+        }
+
+        if (p == null) return false;
+        if (p.venstre == null || p.høyre == null){
+            Node<T> b = p.venstre != null ? p.venstre : p.høyre;
+            if (b != null) b.forelder = q;
+            if (p == rot) rot = b;
+            else if (p == q.venstre) q.venstre = b;
+            else q.høyre = b;
+        }
+
+        else {
+            Node<T> s = p, r = p.høyre;
+            while (r.venstre != null) {
+                s = r;
+                r = r.venstre;
+            }
+            p.verdi = r.verdi;
+
+            if (r.høyre != null) r.høyre.forelder = s;
+
+            if (s != p) s.venstre = r.høyre;
+            else s.høyre = r.høyre;
+        }
+
+        antall--;
+        return true;
     }
 
     public int fjernAlle(T verdi) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        //throw new UnsupportedOperationException("Ikke kodet ennå!");
+        int antall = 0;
+        while (fjern(verdi)) antall++;
+        return antall;
     }
 
     public int antall(T verdi) {
@@ -152,14 +186,36 @@ public class SBinTre<T> {
 
     public void nullstill() {
         throw new UnsupportedOperationException("Ikke kodet ennå!");
+
     }
 
     private static <T> Node<T> førstePostorden(Node<T> p) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        // Fra kompendiet 5.1.7
+        // -> "Den siste i preorden er lik den første i speilvendt postorden."
+
+        while (true) {
+            if (p.venstre != null) p = p.venstre;
+            else if (p.høyre != null) p = p.høyre;
+            else return p;
+        }
     }
 
     private static <T> Node<T> nestePostorden(Node<T> p) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+        // Sjekker om forelder er null, og returnerer da "null"
+        if (p.forelder == null) {
+            return null;
+
+            // Sjekker i treet om mulige plasseringer av nestPostorden
+        } else if (p == p.forelder.venstre) {
+            if (p.forelder.høyre != null) {
+                p = p.forelder.høyre;
+                // Eneste mulig posisjon av nestePostorden blir da
+                // å finne p sin førstePostorden
+                return førstePostorden(p);
+            }
+        }
+        return p.forelder;
     }
 
     public void postorden(Oppgave<? super T> oppgave) {
@@ -171,7 +227,15 @@ public class SBinTre<T> {
     }
 
     private void postordenRecursive(Node<T> p, Oppgave<? super T> oppgave) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+       // throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+        // Bruk av rekursjon til å løse oppgaven. Ganske likt forrige eksemplet
+        if(p.venstre != null) {
+            postordenRecursive(p.venstre, oppgave);
+        } if(p.høyre != null) {
+            postordenRecursive(p.høyre,oppgave);
+        }
+        oppgave.utførOppgave(p.verdi);
     }
 
     public ArrayList<T> serialize() {
