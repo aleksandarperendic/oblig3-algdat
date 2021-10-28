@@ -101,7 +101,7 @@ public class SBinTre<T> {
     }
 
     public boolean fjern(T verdi) {
-       // throw new UnsupportedOperationException("Ikke kodet ennå!");
+
         if (verdi == null) return false;
         Node<T> p = rot, q = null;
         while (p != null) {
@@ -113,10 +113,21 @@ public class SBinTre<T> {
 
         if (p == null) return false;
         if (p.venstre == null || p.høyre == null){
-            Node<T> b = p.venstre != null ? p.venstre : p.høyre;
-            if (b != null) b.forelder = q;
-            if (p == rot) rot = b;
-            else if (p == q.venstre) q.venstre = b;
+            Node<T> b;
+            if(p.venstre != null) {
+                b = p.venstre;
+            } else {
+                b = p.høyre;
+            }
+            if (b != null) {
+                b.forelder = q;
+            }
+            if (p == rot) {
+                rot = b;
+            }
+            else if (p == q.venstre) {
+                q.venstre = b;
+            }
             else q.høyre = b;
         }
 
@@ -128,10 +139,16 @@ public class SBinTre<T> {
             }
             p.verdi = r.verdi;
 
-            if (r.høyre != null) r.høyre.forelder = s;
+            if (r.høyre != null) {
+                r.høyre.forelder = s;
+            }
 
-            if (s != p) s.venstre = r.høyre;
-            else s.høyre = r.høyre;
+            if (s != p) {
+                s.venstre = r.høyre;
+            }
+            else {
+                s.høyre = r.høyre;
+            }
         }
 
         antall--;
@@ -140,7 +157,9 @@ public class SBinTre<T> {
 
     public int fjernAlle(T verdi) {
         int antall = 0;
-        while (fjern(verdi)) antall++;
+        while (fjern(verdi)) {
+            antall++;
+        }
         return antall;
     }
 
@@ -236,7 +255,13 @@ public class SBinTre<T> {
     }
 
     public void postorden(Oppgave<? super T> oppgave) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        // throw new UnsupportedOperationException("Ikke kodet ennå!");
+        Node<T> p = førstePostorden(rot);
+        while (p != null) {
+            p = nestePostorden(p);
+        }
+        oppgave.utførOppgave(p.verdi);
+
     }
 
     public void postordenRecursive(Oppgave<? super T> oppgave) {
@@ -256,7 +281,10 @@ public class SBinTre<T> {
     }
 
     public ArrayList<T> serialize() {
-        // throw new UnsupportedOperationException("Ikke kodet ennå!");
+
+        // LØSTE OPPGAVE UTEN Å SE ORDENTLIG PÅ OPPGAVETEKSEN. DER STO DET NEMLIG
+        // AT MAN IKKE KAN BRUKE REKURSJON.
+
       /*  ArrayList<T> data = new ArrayList<>();
         serializeHjelper(rot, data);
         return data;
@@ -270,20 +298,23 @@ public class SBinTre<T> {
             serializeHjelper(verdi.venstre, data);
             serializeHjelper(verdi.høyre, data);
 */
+
+        // Iterativ
+
         ArrayList<T> liste = new ArrayList<>();
         ArrayDeque<Node<T>> queue = new ArrayDeque<>();
 
-        queue.addLast(rot);
+        queue.addFirst(rot);
 
         while (!queue.isEmpty()) {
             Node<T> curr = queue.removeLast();
 
             if (curr.venstre != null) {
-                queue.addLast(curr.venstre);
+                queue.addFirst(curr.venstre);
             }
 
             if (curr.høyre != null) {
-                queue.addLast(curr.høyre);
+                queue.addFirst(curr.høyre);
             }
 
             liste.add(curr.verdi);
