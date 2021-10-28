@@ -80,29 +80,23 @@ public class SBinTre<T> {
         return antall == 0;
     }
 
-    public final boolean leggInn(T verdi)    // skal ligge i class SBinTre
-    {
+    public boolean leggInn(T verdi) {
         Objects.requireNonNull(verdi, "Ulovlig med nullverdier!");
 
         Node<T> p = rot, q = null;               // p starter i roten
         int cmp = 0;                             // hjelpevariabel
-
-        while (p != null)       // fortsetter til p er ute av treet
-        {
+        while (p != null){
             q = p;                                 // q er forelder til p
             cmp = comp.compare(verdi,p.verdi);     // bruker komparatoren
             p = cmp < 0 ? p.venstre : p.høyre;     // flytter p
         }
-
-        // p er nå null, dvs. ute av treet, q er den siste vi passerte
-
-        p = new Node<>(verdi,q);                   // oppretter en ny node
+        p = new Node<>(verdi, q);
 
         if (q == null) rot = p;                  // p blir rotnode
         else if (cmp < 0) q.venstre = p;         // venstre barn til q
         else q.høyre = p;                        // høyre barn til q
 
-        antall++;                                // én verdi mer i treet
+        antall++;
         return true;                             // vellykket innlegging
     }
 
@@ -145,7 +139,6 @@ public class SBinTre<T> {
     }
 
     public int fjernAlle(T verdi) {
-        //throw new UnsupportedOperationException("Ikke kodet ennå!");
         int antall = 0;
         while (fjern(verdi)) antall++;
         return antall;
@@ -185,8 +178,32 @@ public class SBinTre<T> {
     }
 
     public void nullstill() {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
 
+        if (rot == null) {
+            return;
+        }
+
+        ArrayList<Node> liste = new ArrayList();
+        ArrayDeque<Node> stack = new ArrayDeque<>();
+
+        while (rot != null || stack.size() > 0) {
+            while (rot != null) {
+                stack.push(rot);
+                rot = rot.høyre;
+            }
+            rot = stack.pop();
+            liste.add(rot);
+            rot = rot.venstre;
+        }
+
+        for(Node node: liste) {
+            node.forelder = null;
+            node.venstre = null;
+            node.høyre = null;
+            node.verdi = null;
+        }
+
+        antall = 0;
     }
 
     private static <T> Node<T> førstePostorden(Node<T> p) {
@@ -239,12 +256,51 @@ public class SBinTre<T> {
     }
 
     public ArrayList<T> serialize() {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        // throw new UnsupportedOperationException("Ikke kodet ennå!");
+      /*  ArrayList<T> data = new ArrayList<>();
+        serializeHjelper(rot, data);
+        return data;
+    }
+
+    private void serializeHjelper(Node verdi, ArrayList<T> data){
+        if (verdi == null) {
+            return;
+        }
+        data.add(rot.verdi);
+            serializeHjelper(verdi.venstre, data);
+            serializeHjelper(verdi.høyre, data);
+*/
+        ArrayList<T> liste = new ArrayList<>();
+        ArrayDeque<Node<T>> queue = new ArrayDeque<>();
+
+        queue.addLast(rot);
+
+        while (!queue.isEmpty()) {
+            Node<T> curr = queue.removeLast();
+
+            if (curr.venstre != null) {
+                queue.addLast(curr.venstre);
+            }
+
+            if (curr.høyre != null) {
+                queue.addLast(curr.høyre);
+            }
+
+            liste.add(curr.verdi);
+        }
+
+        //return new ArrayList<>(liste);
+        return liste;
     }
 
     static <K> SBinTre<K> deserialize(ArrayList<K> data, Comparator<? super K> c) {
-        throw new UnsupportedOperationException("Ikke kodet ennå!");
+        // throw new UnsupportedOperationException("Ikke kodet ennå!");
+        ArrayList<K> liste = new ArrayList<>(data);
+        SBinTre<K> tre = new SBinTre<>(c);
+        for (K verdi : liste) {
+            tre.leggInn(verdi);
+        }
+        return tre;
     }
-
 
 } // ObligSBinTre
